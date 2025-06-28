@@ -1,13 +1,13 @@
 import { Router } from 'express';
 import { AuthenticatedRequest, authenticateFirebaseToken } from '../middleware/firebaseAuth';
-import { imageMetadataSchema } from '../../types/images/metadata';
-import supabase from '../supabase';
-import { IMAGES_BUCKET, IMAGES_METADATA_DB } from '../../config/constants';
+import { imageMetadataSchema } from '../types/images/metadata';
+import supabase from '../services/supabase';
+import { IMAGES_BUCKET, IMAGES_METADATA_DB } from '../config/constants';
 import { upload } from '../middleware/upload';
 import { v4 as uuid } from 'uuid';
-import { firebaseDb } from '../firebase';
-import { compressToTargetSize } from '../../utils/images/compress';
-import { ImagePostResponse } from '../../types/images/image';
+import { firebaseDb } from '../services/firebase';
+import { compressToTargetSize } from '../utils/images/compress';
+import { ImagePostResponse } from '../types/images/image';
 
 const router = Router();
 

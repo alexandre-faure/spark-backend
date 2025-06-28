@@ -27,10 +27,11 @@
     "@types/jsonwebtoken": "^9.0.9",
     "@types/multer": "^1.4.13",
     "@types/node": "^22.15.29",
+    "@vercel/node": "^5.3.0",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.8.3"
   },
   "scripts": {
-    "dev": "ts-node-dev --respawn src/server/index.ts"
+    "dev": "ts-node-dev --respawn api/index.ts"
   }
 }

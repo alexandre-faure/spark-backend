@@ -1,17 +1,16 @@
-// src/index.ts
 import express from 'express';
 import routes from './routes';
 
 const app = express();
+
+app.use(express.static('public'));
 app.use(express.json());
 
-app.get('/', (_, res) => {
-    res.json({ message: 'Spark backend on Vercel!' });
+
+app.get('/', async (_, res): Promise<any> => {
+    return res.status(200).json({ message: 'This server hosts the services for Spark application.' });
 });
 
 app.use('/api', routes);
 
-const PORT = 3000;
-app.listen(PORT, () => console.log("Server ready on port 3000."));
-
-module.exports = app;
+module.exports = app

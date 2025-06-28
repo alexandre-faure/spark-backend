@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { AuthenticatedRequest, authenticateFirebaseToken } from '../middleware/firebaseAuth';
+import { AuthenticatedRequest, authenticateFirebaseToken } from './middleware/firebaseAuth';
 import { imageMetadataSchema } from '../types/images/metadata';
 import supabase from '../services/supabase';
 import { IMAGES_BUCKET, IMAGES_METADATA_DB } from '../config/constants';
-import { upload } from '../middleware/upload';
+import { upload } from './middleware/upload';
 import { v4 as uuid } from 'uuid';
 import { firebaseDb } from '../services/firebase';
 import { compressToTargetSize } from '../utils/images/compress';
@@ -11,15 +11,24 @@ import { ImagePostResponse } from '../types/images/image';
 
 const router = Router();
 
+router.get('/', async (_, res): Promise<any> => {
+    return res.status(200).json({ message: 'Image service is running' });
+});
+
 // Apply middleware to all routes in this group
 router.use(authenticateFirebaseToken);
 
-router.get('/:imagePath', async (req: AuthenticatedRequest, res): Promise<any> => {
-    const { user } = req;
-    if (!user) {
-        return res.status(401).json({ message: 'Unauthorized' });
-    }
+router.get('/', async (req: AuthenticatedRequest, res): Promise<any> => {
+    const { imagePath } = req.params;
 
+    const { data } = supabase
+        .storage
+        .from(IMAGES_BUCKET).getPublicUrl(imagePath);
+
+    return res.status(200).json(data.publicUrl);
+});
+
+router.get('/:imagePath', async (req: AuthenticatedRequest, res): Promise<any> => {
     const { imagePath } = req.params;
 
     const { data } = supabase
@@ -32,10 +41,7 @@ router.get('/:imagePath', async (req: AuthenticatedRequest, res): Promise<any> =
 router.post('/', upload.single('content'), async (req: AuthenticatedRequest, res): Promise<any> => {
     try {
         const { user } = req;
-        if (!user) {
-            return res.status(401).json({ message: 'Unauthorized' });
-        }
-        const { uid: authorId } = user;
+        const { uid: authorId } = user!;
 
         const { metadata: rawMetadata } = req.body;
         const file = req.file;

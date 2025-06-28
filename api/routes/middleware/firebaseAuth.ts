@@ -1,6 +1,5 @@
-// src/middleware/firebaseAuth.ts
 import { Request, Response, NextFunction } from 'express';
-import { admin } from '../services/firebase';
+import admin from 'firebase-admin';
 
 export interface AuthenticatedRequest extends Request {
     user?: admin.auth.DecodedIdToken;
@@ -17,8 +16,6 @@ export const authenticateFirebaseToken = async (
     }
 
     const token = authHeader.split(' ')[1];
-
-    // Temporarily without checking for a valid token
 
     try {
         const decodedToken = await admin.auth().verifyIdToken(token);

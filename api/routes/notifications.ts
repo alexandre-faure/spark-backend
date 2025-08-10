@@ -74,6 +74,29 @@ router.post('/schedule', async (req: AuthenticatedRequest, res): Promise<any> =>
     return res.status(201).json({ message: 'Notification stored successfully', data: notificationRecord });
 });
 
+// Cancel a notification by its key and recipient
+router.delete('/cancel/:notificationKey/:recipientId', async (req: AuthenticatedRequest, res): Promise<any> => {
+    const { user } = req;
+    if (!user) {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+    const { notificationKey, recipientId } = req.params;
+    if (!notificationKey || !recipientId) {
+        return res.status(400).json({ message: 'Missing notification key or recipientId' });
+    }
+    const { error } = await supabase
+        .from('notifications')
+        .delete()
+        .eq('notificationKey', notificationKey)
+        .eq('recipientId', recipientId)
+        .eq('sent', false);
 
+    if (error) {
+        console.error('Error canceling notification:', error);
+        return res.status(500).json({ message: 'Failed to cancel notification' });
+    }
+
+    return res.status(200).json({ message: 'Notification canceled successfully' });
+});
 
 export default router;

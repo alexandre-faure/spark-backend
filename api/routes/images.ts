@@ -1,19 +1,15 @@
 import { Router } from 'express';
-import { AuthenticatedRequest, authenticateFirebaseToken } from './middleware/firebaseAuth';
-import { imageMetadataSchema } from '../types/images/metadata';
-import supabase from '../services/supabase';
-import { IMAGES_BUCKET, IMAGES_METADATA_DB } from '../config/constants';
-import { upload } from './middleware/upload';
 import { v4 as uuid } from 'uuid';
+import { IMAGES_BUCKET, IMAGES_METADATA_DB } from '../config/constants';
 import { firebaseDb } from '../services/firebase';
-import { compressToTargetSize } from '../utils/images/compress';
+import supabase from '../services/supabase';
 import { ImagePostResponse } from '../types/images/image';
+import { imageMetadataSchema } from '../types/images/metadata';
+import { compressToTargetSize } from '../utils/images/compress';
+import { AuthenticatedRequest, authenticateFirebaseToken } from './middleware/firebaseAuth';
+import { upload } from './middleware/upload';
 
 const router = Router();
-
-router.get('/', async (_, res): Promise<any> => {
-    return res.status(200).json({ message: 'Image service is running' });
-});
 
 // Apply middleware to all routes in this group
 router.use(authenticateFirebaseToken);

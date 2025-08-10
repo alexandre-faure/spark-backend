@@ -5,10 +5,6 @@ import { AuthenticatedRequest, authenticateFirebaseToken } from './middleware/fi
 
 const router = Router();
 
-router.get('/', async (_, res): Promise<any> => {
-    return res.status(200).json({ message: 'Notification service is running' });
-});
-
 // Apply middleware to all routes in this group
 router.use(authenticateFirebaseToken);
 

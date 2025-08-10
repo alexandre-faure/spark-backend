@@ -20,7 +20,10 @@ export async function sendNotification(notification: NotificationSupabase) {
     }
 
     const fcmToken = data!.fcm as string
-    const notificationData = {notificationKey: notification.notificationKey ,...data!.data}
+    const notificationData = {
+        ...notification.data,
+        notificationKey: notification.notificationKey
+    }
 
     const accessToken = await getAccessToken({
         clientEmail: serviceAccount.client_email,

@@ -6,7 +6,7 @@ export const notificationBaseSchema = z.object({
     body: z.string().min(1, 'Body is required'),
     recipientId: z.string().min(1, 'Recipient ID is required'),
     notificationKey: z.string().min(1, 'Notification key is required'),
-    data: z.record(z.any()),
+    data: z.record(z.string()),
     sendAt: z.string().default(() => new Date().toISOString()),
 });
 
@@ -17,3 +17,5 @@ export const notificationSupabaseSchema = notificationBaseSchema.extend({
     createdAt: z.string().default(() => new Date().toISOString()),
     sent: z.boolean().default(false),
 });
+
+export type NotificationSupabase = z.infer<typeof notificationSupabaseSchema>;

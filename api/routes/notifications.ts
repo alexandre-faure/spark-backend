@@ -1,9 +1,13 @@
 import { Router } from 'express';
+import { notificationBaseSchema, notificationSupabaseSchema } from '../../types/notifications/notification';
 import supabase from '../services/supabase';
-import { notificationBaseSchema, notificationSupabaseSchema } from '../types/notifications/notification';
 import { AuthenticatedRequest, authenticateFirebaseToken } from './middleware/firebaseAuth';
 
 const router = Router();
+
+router.get('/', async (_, res): Promise<any> => {
+    return res.status(200).json({ message: 'Notification service is running' });
+});
 
 // Apply middleware to all routes in this group
 router.use(authenticateFirebaseToken);

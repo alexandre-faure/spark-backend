@@ -50,16 +50,14 @@ router.post('/schedule', async (req: AuthenticatedRequest, res): Promise<any> =>
     const parsedData = notificationBaseSchema.parse(notificationData.data);
 
     // Create notification record
-    const notificationRecord = notificationSupabaseSchema.parse({
-        ...parsedData,
-        authorId: user.uid,
-    });
+    const notificationRecord = notificationSupabaseSchema.parse(parsedData);
 
     // Drop all notifications that are not sent with the same notification key
     await supabase
         .from('notifications')
         .delete()
         .eq('notificationKey', notificationRecord.notificationKey)
+        .eq('recipientId', notificationRecord.recipientId)
         .eq('sent', false);
 
     const { error } = await supabase

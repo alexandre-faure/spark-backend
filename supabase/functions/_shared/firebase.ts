@@ -8,21 +8,7 @@ const supabase = createClient(
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 )
 
-type Notification = {
-    id: string;
-    createdAt: Date;
-    title: string;
-    body: string;
-    authorId: string;
-    authorName: string;
-    recipientId: string;
-    groupId: string;
-    notificationKey: string;
-    sendAt: Date;
-    sent: boolean;
-};
-
-export async function sendNotification(notification: Notification) {
+export async function sendNotification(notification: NotificationSupabase) {
     const { data } = await supabase
     .from('user_fcm')
     .select('fcm')
@@ -34,6 +20,7 @@ export async function sendNotification(notification: Notification) {
     }
 
     const fcmToken = data!.fcm as string
+    const notificationData = {notificationKey: notification.notificationKey ,...data!.data}
 
     const accessToken = await getAccessToken({
         clientEmail: serviceAccount.client_email,
@@ -55,12 +42,7 @@ export async function sendNotification(notification: Notification) {
                     title: notification.title,
                     body: notification.body,
                 },
-                data:{
-                    groupId: notification.groupId,
-                    authorId: notification.authorId,
-                    authorName: notification.authorName,
-                    notificationKey: notification.notificationKey,
-                }
+                data: notificationData
             },
         }),
         }

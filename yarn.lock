@@ -2615,6 +2615,13 @@ create-require@^1.1.0:
   resolved "https://registry.npmjs.org/create-require/-/create-require-1.1.1.tgz"
   integrity sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==
 
+cross-fetch@^4.0.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/cross-fetch/-/cross-fetch-4.1.0.tgz#8f69355007ee182e47fa692ecbaa37a52e43c3d2"
+  integrity sha512-uKm5PU+MHTootlWEY+mZ4vvXoCn4fLQxT9dSc1sXVMSFkINTJVN8cAQROpwcKm8bJ/c7rgZVIBWzH5T78sNZZw==
+  dependencies:
+    node-fetch "^2.7.0"
+
 cross-spawn@^7.0.6:
   version "7.0.6"
   resolved "https://registry.yarnpkg.com/cross-spawn/-/cross-spawn-7.0.6.tgz#8a58fe78f00dcd70c370451759dfbfaf03e8ee9f"
@@ -4386,6 +4393,13 @@ time-span@4.0.0:
   integrity sha512-MyqZCTGLDZ77u4k+jqg4UlrzPTPZ49NDlaekU6uuFaJLzPIN1woaRXCbGeqOfxwc3Y37ZROGAJ614Rdv7Olt+g==
   dependencies:
     convert-hrtime "^3.0.0"
+
+tmdb-ts@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/tmdb-ts/-/tmdb-ts-2.0.2.tgz#d797ab87a1b28469eaebd4e6d96ff7d6c801c100"
+  integrity sha512-lRfNtTj8kDcr3+AekLs1rVyZG8VDDumeaFYZnEO5oESaXqGOd27p5kLr1D7fhIHCfnhvKyvm3wgmc0SfOYTMuQ==
+  dependencies:
+    cross-fetch "^4.0.0"
 
 to-regex-range@^5.0.1:
   version "5.0.1"

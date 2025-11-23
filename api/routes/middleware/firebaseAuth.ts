@@ -10,7 +10,16 @@ export const authenticateFirebaseToken = async (
     res: Response,
     next: NextFunction
 ): Promise<any> => {
-    const authHeader = req.headers.authorization;
+    let authHeader = req.headers.authorization;
+    if (process.env.MODE === 'dev') {
+        if (process.env.FIREBASE_TOKEN) {
+            authHeader = `Bearer ${process.env.FIREBASE_TOKEN}`;
+        }
+    }
+    else {
+        authHeader = req.headers.authorization;
+    }
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ message: 'Missing or invalid Authorization header' });
     }

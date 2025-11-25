@@ -1,6 +1,8 @@
 import { Router } from 'express';
-import { TMDB } from 'tmdb-ts';
+import { Movie, TMDB, TV } from 'tmdb-ts';
 import { AuthenticatedRequest, authenticateFirebaseToken } from './middleware/firebaseAuth';
+import { computeTitleDistanceScore } from './utils/strings';
+
 
 const getTmdb = () => {
     const tmdbAccessToken = process.env.TMDB_ACCESS_TOKEN;
@@ -13,50 +15,58 @@ const tmdb = getTmdb();
 
 const router = Router();
 
-router.get('/', async (_, res): Promise<any> => {
-    return res.status(200).json({ message: 'TMDB service is running' });
-});
-
 // Apply middleware to all routes in this group
 router.use(authenticateFirebaseToken);
 
+// Both movie and serie search endpoint
+router.get('/', async (req: AuthenticatedRequest, res): Promise<any> => {
+    const query = req.query.query as string;
+    if (!query || query.trim() === '') {
+        return res.status(400).json({ message: 'Query parameter is required' });
+    }
 
-// Get movies by query
-router.get('/movie', async (req: AuthenticatedRequest, res): Promise<any> => {
-    const movies = await tmdb.search.movies({
-            query: req.query.query as string,
+    const args = {
+            query,
             page: Number(req.query.page) || 1,
-            language:"fr-FR"
-        });
+            language:"fr-FR" as "fr-FR"
+        };
+    const movie_request = tmdb.search.movies(args);
+    const serie_request = tmdb.search.tvShows(args);
+        
+    const [movies, series] = await Promise.all([movie_request, serie_request]);
 
-    if (!movies) {
-        return res.status(404).json({ message: 'Error while fetching movies' });
+    if (!movies || !series) {
+        return res.status(404).json({ message: 'Error while fetching movies or series' });
     }
 
-    if (movies.results.length === 0) {
-        return res.status(204).json({ message: 'No movies found' });
+    if (movies.results.length + series.results.length === 0) {
+        return res.status(204).json({ message: 'No results found' });
     }
 
-    return res.status(200).json(movies.results);
-});
+    // Sort results by popularity and query hamming distance to prioritize relevant results
+    const combinedResults = [
+        ...movies.results.map(
+            (x) => ({...x, media_type: "movie"})
+        ),
+        ...series.results.map(
+            (x) => ({...x, media_type: "tv"}))
+    ];
 
-
-router.get('/serie', async (req: AuthenticatedRequest, res): Promise<any> => {
-    const series = await tmdb.search.tvShows({
-            query: req.query.query as string,
-            page: Number(req.query.page) || 1,
-            language:"fr-FR"
-        });
-    
-    if (!series) {
-        return res.status(404).json({ message: 'Error while fetching series' });
+    const getResultScore = (item: TV | Movie, hammingWeight: number = 1, popularityWeight: number = 0.5) => {
+        const name = 'title' in item ? item.title : item.name;
+        const distanceScore = computeTitleDistanceScore(query, name);
+        const popularityScore = item.popularity / 100;
+        return (hammingWeight * distanceScore) + (popularityWeight * popularityScore);
     }
 
-    if (series.results.length === 0) {
-        return res.status(204).json({ message: 'No series found' });
-    }
+    const combinedResultsWithScore = combinedResults.reduce((acc: ((TV | Movie) & { score: number })[], item) => {
+        const score = getResultScore(item);
+        acc.push({ ...item, score });
+        return acc;
+    }, []);
+    combinedResultsWithScore.sort((a, b) => b.score - a.score);
 
-    return res.status(200).json(series.results);
+    return res.status(200).json(combinedResultsWithScore);
 });
 
 export default router;

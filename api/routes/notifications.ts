@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { notificationBaseSchema, notificationSupabaseSchema } from '../../types/notifications/notification';
-import supabase from '../services/supabase';
 import { AuthenticatedRequest, authenticateFirebaseToken } from './middleware/firebaseAuth';
+import { supabase } from './services';
 
 const router = Router();
 

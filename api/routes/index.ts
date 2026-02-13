@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import bookRoutes from "./books";
 import imagesRoutes from './images';
 import notificationsRoutes from './notifications';
 import tmdbRoutes from "./tmdb";
@@ -12,5 +13,6 @@ router.get('/', (_, res) => {
 router.use('/images', imagesRoutes);
 router.use('/notifications', notificationsRoutes);
 router.use('/tmdb', tmdbRoutes);
+router.use('/books', bookRoutes);
 
 export default router;

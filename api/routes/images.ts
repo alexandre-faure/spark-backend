@@ -5,9 +5,8 @@ import { ImagePostResponse } from '../../types/images/image';
 import { imageMetadataSchema } from '../../types/images/metadata';
 import { compressToTargetSize } from '../../utils/images/compress';
 import { IMAGES_BUCKET, IMAGES_METADATA_DB } from '../config/constants';
-import { firebaseDb } from '../services/firebase';
-import supabase from '../services/supabase';
 import { AuthenticatedRequest, authenticateFirebaseToken } from './middleware/firebaseAuth';
+import { firebaseDb, supabase } from './services';
 
 const storage = multer.memoryStorage();
 export const upload = multer({ storage });
@@ -23,6 +22,9 @@ router.use(authenticateFirebaseToken);
 
 router.get('/', async (req: AuthenticatedRequest, res): Promise<any> => {
     const { imagePath } = req.params;
+    if (typeof imagePath !== 'string') {
+        return res.status(400).json({ message: 'Invalid image path parameter' });
+    }
 
     const { data } = supabase
         .storage
@@ -33,6 +35,9 @@ router.get('/', async (req: AuthenticatedRequest, res): Promise<any> => {
 
 router.get('/:imagePath', async (req: AuthenticatedRequest, res): Promise<any> => {
     const { imagePath } = req.params;
+    if (typeof imagePath !== 'string') {
+        return res.status(400).json({ message: 'Invalid image path parameter' });
+    }
 
     const { data } = supabase
         .storage
@@ -106,6 +111,9 @@ router.delete('/:filename', authenticateFirebaseToken, async (req: Authenticated
 
     if (!filename) {
         return res.status(400).json({ message: 'Missing filename in request' });
+    }
+    if (typeof filename !== 'string') {
+        return res.status(400).json({ message: 'Invalid filename parameter' });
     }
 
     try {

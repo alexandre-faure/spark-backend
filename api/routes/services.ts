@@ -1,7 +1,13 @@
-import { initializeApp, cert, getApps } from 'firebase-admin/app';
+/** FIREBASE SERVICE*/
+
+import dotenv from 'dotenv';
+import { cert, getApps, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
+
+dotenv.config();
+
 
 const base64Key = process.env.SERVICE_ACCOUNT_KEY_BASE64;
 
@@ -19,3 +25,12 @@ if (getApps().length === 0) {
 }
 
 export const firebaseDb = getFirestore();
+
+/** SUPABASE SERVICE*/
+import { createClient } from '@supabase/supabase-js';
+import { SUPABASE_SERVICE_ROLE_KEY, SUPABASE_URL } from '../config/env';
+
+export const supabase = createClient(
+    SUPABASE_URL,
+    SUPABASE_SERVICE_ROLE_KEY
+);

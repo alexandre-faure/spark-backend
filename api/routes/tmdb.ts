@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { Movie, TMDB, TV } from 'tmdb-ts';
+import { computeTitleDistanceScore } from '../../utils/strings';
 import { AuthenticatedRequest, authenticateFirebaseToken } from './middleware/firebaseAuth';
-import { computeTitleDistanceScore } from './utils/strings';
 
 
 const getTmdb = () => {
@@ -67,6 +67,35 @@ router.get('/', async (req: AuthenticatedRequest, res): Promise<any> => {
     combinedResultsWithScore.sort((a, b) => b.score - a.score);
 
     return res.status(200).json(combinedResultsWithScore);
+});
+
+router.get('/:id', async (req: AuthenticatedRequest, res): Promise<any> => {
+    const { id } = req.params;
+    const type = req.query.type as string;
+
+    if (!id || !type) {
+        return res.status(400).json({ message: 'ID and type parameters are required' });
+    }
+
+    let result;
+    try {
+        if (type === 'movie') {
+            result = await tmdb.movies.details(Number(id), [], "fr-FR");
+        } else if (type === 'tv') {
+            result = await tmdb.tvShows.details(Number(id), [], "fr-FR");
+        } else {
+            return res.status(400).json({ message: 'Invalid type parameter' });
+        }
+    } catch (error) {
+        console.error('Error fetching details from TMDB:', error);
+        return res.status(500).json({ message: 'Error fetching details from TMDB' });
+    }
+
+    if (!result) {
+        return res.status(404).json({ message: 'Movie or TV show not found' });
+    }
+
+    return res.status(200).json(result);
 });
 
 export default router;

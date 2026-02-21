@@ -13,4 +13,13 @@ app.get('/', async (_, res): Promise<any> => {
 
 app.use('/api', routes);
 
+// Get server time for testing purposes
+app.get('/api/time', (_, res) => {
+  res.json({
+    serverTime: new Date().toISOString(),
+    serverTimeUnix: Math.floor(Date.now() / 1000),
+  });
+});
+
+
 module.exports = app

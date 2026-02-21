@@ -11,10 +11,8 @@ export const authenticateFirebaseToken = async (
     next: NextFunction
 ): Promise<any> => {
     let authHeader = req.headers.authorization;
-    if (process.env.MODE === 'dev') {
-        if (process.env.FIREBASE_TOKEN) {
-            authHeader = `Bearer ${process.env.FIREBASE_TOKEN}`;
-        }
+    if (process.env.MODE === 'dev' && process.env.FIREBASE_TOKEN) {
+        authHeader = `Bearer ${process.env.FIREBASE_TOKEN}`;
     }
     else {
         authHeader = req.headers.authorization;

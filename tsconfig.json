@@ -1,11 +1,26 @@
 {
-    "compilerOptions": {
-        "target": "es2022",
-        "module": "commonjs",
-        "outDir": "./dist",
-        "strict": true,
-        "esModuleInterop": true,
-        "skipLibCheck": true,
-        "resolveJsonModule": true
-    }
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "commonjs",
+    "lib": ["es2022"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+
+    // 👇 important for the errors you’re seeing
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "typeRoots": ["./node_modules/@types"], // default, but explicit is safer
+    "types": ["node"], // adds @types/node globally
+    "baseUrl": ".",
+    "paths": {
+      "*": ["node_modules/*"]
+    },
+
+    // Output settings (Vercel expects a compiled folder)
+    "outDir": "./dist"
+  },
+  "include": ["api/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
 }
